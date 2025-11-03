@@ -70,6 +70,11 @@ class WeatherPage extends ControllerBase {
           [
             'data' => [
               '#markup' => '<img src="' . $icon . '" alt="' . $description . '" width="200" height="200" />',
+              '#theme' => 'image',
+              '#uri' => $icon,
+              '#alt' => $description,
+              '#width' => 200,
+              '#height' => 200,
             ]
           ],
           [
