@@ -1,0 +1,34 @@
+{#
+/**
+  * @file
+  * Default theme implementation for anytown weather-page.
+  *
+  * Available variables:
+  * - weather_intro: Any messages to display.
+  * - weather_forecast: Table with weekend forecast.
+  * - short_forecast: A summary of the forecast.
+  * - weather_closures: Any weather-related closures, might be null.
+  *
+  * @ingroup themeable
+  */
+#}
+
+<div class="weather-page">
+  <div class="weather-page__message">
+    {{  weather_intro }}
+  </div>
+  <div class="weather-page__forecast">
+    <h2>Weekend forecast</h2>
+    <div class="weather-page__forecast--short">
+      {{ short_forecast }}
+    </div>
+    <div class="weather-page__forecast--extended">
+      {{ weather_forecast }}
+    </div>
+  </div>
+  {%  if weather_closures is not null %}
+    <div class="weather-page__closures">
+      {{ weather_closures }}
+    </div>
+  {% endif %}
+</div>

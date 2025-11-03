@@ -54,6 +54,8 @@ class WeatherPage extends ControllerBase {
     $forecast_data = $this->forecastClient->getForecastData($url);
 
     $rows = [];
+    $highest = 0;
+    $lowest = 0;
 
     if($forecast_data) {
       foreach ($forecast_data as $item) {
@@ -69,12 +71,11 @@ class WeatherPage extends ControllerBase {
           $weekday,
           [
             'data' => [
-              '#markup' => '<img src="' . $icon . '" alt="' . $description . '" width="200" height="200" />',
               '#theme' => 'image',
               '#uri' => $icon,
               '#alt' => $description,
-              '#width' => 200,
-              '#height' => 200,
+              '#width' => 100,
+              '#height' => 100,
             ]
           ],
           [
@@ -83,6 +84,9 @@ class WeatherPage extends ControllerBase {
             ]
           ],
         ];
+
+        $highest = max($highest, $high);
+        $lowest = min($lowest, $low);
       }
 
       $weather_forecast = [
@@ -93,19 +97,26 @@ class WeatherPage extends ControllerBase {
           'class' => ['weather_page--forecast-table']
         ],
       ];
+
+      $short_forecast = [
+        '#markup' => "The high for the weekend is {$highest} and the low is {$lowest}."
+      ];
     }
     else {
       $weather_forecast = [
         '#markup' => '<p>Sorry $display_name, no weather data available.</p>'
       ];
+      $short_forecast = NULL;
     }
 
     $build = [
-      'weather_intro' => [
+      '#theme' => 'weather_page',
+      '#weather_intro' => [
         '#markup' => "<p>Hi $display_name, check out this weekend's weather forecast:</p>"
       ],
-      'weather_forecast' => $weather_forecast,
-      'weather_closures' => [
+      '#short_forecast' => $short_forecast,
+      '#weather_forecast' => $weather_forecast,
+      '#weather_closures' => [
         '#theme' => 'item_list',
         '#title' => 'Weather-related closures',
         '#items' => [
