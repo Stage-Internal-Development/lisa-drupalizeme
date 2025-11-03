@@ -28,6 +28,13 @@ class ForecastClient implements ForecastClientInterface {
   protected $logger;
 
   /**
+   * Forecast adapter.
+   *
+   * @var \Drupal\anytown\ForecastAdapterInterface
+   */
+  protected $adapter;
+
+  /**
    * Construct a forecast API client.
    *
    * @param \GuzzleHttp\ClientInterface $httpClient
@@ -35,9 +42,14 @@ class ForecastClient implements ForecastClientInterface {
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   Logger factory service.
    */
-  public function __construct(ClientInterface $httpClient, LoggerChannelFactoryInterface $logger_factory) {
+  public function __construct(
+    ClientInterface $httpClient,
+    LoggerChannelFactoryInterface $logger_factory,
+    ForecastAdapterInterface $adapter
+  ) {
     $this->httpClient = $httpClient;
     $this->logger = $logger_factory->get('anytown');
+    $this->adapter = $adapter;
   }
 
   /**
@@ -53,31 +65,8 @@ class ForecastClient implements ForecastClientInterface {
       return NULL;
     }
 
-    $forecast = [];
-    foreach ($json->list as $day) {
-      $forecast[$day->day] = [
-        'weekday' => ucfirst($day->day),
-        'description' => $day->weather[0]->description,
-        'high' => $this->kelvinToFahrenheit($day->main->temp_max),
-        'low' => $this->kelvinToFahrenheit($day->main->temp_min),
-        'icon' => $day->weather[0]->icon,
-      ];
-    }
+    return $this->adapter->parse($json);
 
-    return $forecast;
-  }
-
-  /**
-   * Helper to convert temperature values form Kelvin to Fahrenheit.
-   *
-   * @param float $kelvin
-   *   Temperature in Kelvin.
-   *
-   * @return float
-   *   Temperature in Fahrenheit.
-   */
-  public static function kelvinToFahrenheit(float $kelvin) : float {
-    return round(($kelvin - 273.15) * 9 / 5 + 32);
   }
 
 }
