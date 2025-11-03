@@ -1,0 +1,6 @@
+anytown.weather:
+  title: Weather
+  description: Check this week's weather.
+  menu_name: main
+  # From anytown.routing.yml
+  route_name: anytown.weather_page
