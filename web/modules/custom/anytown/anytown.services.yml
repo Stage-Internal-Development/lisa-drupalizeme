@@ -1,5 +1,10 @@
 services:
+  anytown.adapter.openweathermap:
+    class: Drupal\anytown\Adapter\OpenWeatherMapAdapter
+
   anytown.forecast_client:
     class: Drupal\anytown\ForecastClient
-    arguments: ['@http_client', '@logger.factory']
-  Drupal\anytown\ForecastClientInterface: '@anytown.forecast_client'
+    arguments:
+      - '@http_client'
+      - '@logger.factory'
+      - '@anytown.adapter.openweathermap'
