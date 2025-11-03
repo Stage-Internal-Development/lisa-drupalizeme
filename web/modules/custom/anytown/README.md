@@ -1,30 +1,34 @@
-## INTRODUCTION
+## ForecastClient
+A service class that fetches weather forecast data from external APIs,
+acts as a bridge between the Drupal application and the API providers.
 
-The anytown module is a DESCRIBE_THE_MODULE_HERE.
+1. HTTP Communication
+- Makes GET requests to weather API URLs using Guzzle HTTP client.
+- Handles network errors gracefully.
 
-The primary use case for this module is:
+2. Error Handling
+- Catches HTTP exceptions (network failures, timeouts, invalid URLs)
+- Logs errors for debugging
+- Returns null when data cannot be retrieved
 
-- Use case #1
-- Use case #2
-- Use case #3
+3. Data transformation
+- Received raw JSON from APIs
+- Delegates parsing to an adapter
+- Returns standardized array format
 
-## REQUIREMENTS
-
-DESCRIBE_MODULE_DEPENDENCIES_HERE
-
-## INSTALLATION
-
-Install as you would normally install a contributed Drupal module.
-See: https://www.drupal.org/node/895232 for further information.
-
-## CONFIGURATION
-- Configuration step #1
-- Configuration step #2
-- Configuration step #3
-
-## MAINTAINERS
-
-Current maintainers for Drupal 10:
-
-- FIRST_NAME LAST_NAME (NICKNAME) - https://www.drupal.org/u/NICKNAME
-
+### How it works
+```
+[Controller]
+  ↓ calls getForecastData($url)
+[ForecastClient]
+  ↓ makes HTTP request
+[Weather API]
+  ↓ returns JSON
+[ForecastClient]
+  ↓ delegates to adapter
+[Adapter]
+  ↓ parses & standardizes
+[ForecastClient]
+  ↓ returns array
+[Controller]
+```
