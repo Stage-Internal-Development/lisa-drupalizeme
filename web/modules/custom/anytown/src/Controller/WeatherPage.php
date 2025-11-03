@@ -53,28 +53,63 @@ class WeatherPage extends ControllerBase {
     $url = 'https://module-developer-guide-demo-site.ddev.site/modules/custom/anytown/data/weather_forecast.json';
     $forecast_data = $this->forecastClient->getForecastData($url);
 
+    $rows = [];
+
     if($forecast_data) {
-      $forecast = '<ul>';
       foreach ($forecast_data as $item) {
         [
-        'weekday' => $weekday,
-        'description' => $description,
-        'high' => $high,
-        'low' => $low,
+          'weekday' => $weekday,
+          'description' => $description,
+          'high' => $high,
+          'low' => $low,
+          'icon' => $icon,
         ] = $item;
-        $forecast .="<li>$weekday will be <em>$description</em> with a high of $high and a low of $low.</li>";
+
+        $rows[] = [
+          $weekday,
+          [
+            'data' => [
+              '#markup' => '<img src="' . $icon . '" alt="' . $description . '" width="200" height="200" />',
+            ]
+          ],
+          [
+            'data' => [
+              '#markup' => "<em>{$description}</em> with a high of {$high} and a low of {$low}.</em>"
+            ]
+          ],
+        ];
       }
-      $forecast .= '</ul>';
+
+      $weather_forecast = [
+        '#type' => 'table',
+        '#header' => ['Day', '', 'Forecast'],
+        '#rows' => $rows,
+        '#attributes' => [
+          'class' => ['weather_page--forecast-table']
+        ],
+      ];
     }
     else {
-      $forecast = '<p>Sorry $display_name, no weather data available.</p>';
+      $weather_forecast = [
+        '#markup' => '<p>Sorry $display_name, no weather data available.</p>'
+      ];
     }
 
-    $output = "<p>Hi $display_name, check out this weekend's weather forecast:</p>";
-    $output .= $forecast;
-
-    return [
-      '#markup' => $output,
+    $build = [
+      'weather_intro' => [
+        '#markup' => "<p>Hi $display_name, check out this weekend's weather forecast:</p>"
+      ],
+      'weather_forecast' => $weather_forecast,
+      'weather_closures' => [
+        '#theme' => 'item_list',
+        '#title' => 'Weather-related closures',
+        '#items' => [
+          'Ice rink closed until winter. Please stay off while we prepare it.',
+          'Parking behind Apple Lane is still closed from all the rain last weekend.'
+        ],
+      ],
     ];
+
+    return $build;
   }
 }
