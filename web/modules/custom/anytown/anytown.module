@@ -8,9 +8,9 @@ use Drupal\anytown\Hook\AnytownTheme;
 
 // Delegates theme hook function to the OOP implementation.
 // Calls its theme() method and return the results.
-if (version_compare(\Drupal::VERSION, '11.1.0', '<')) {
+// https://www.hashbangcode.com/article/drupal-11-object-oriented-hooks-and-hook-service-classes
+#[LegacyHook]
   function anytown_theme($existing, $type, $theme, $path) {
     $handler = \Drupal::classResolver()->getInstanceFromDefinition(AnytownTheme::class);
     return $handler->theme();
   }
-}
