@@ -80,7 +80,13 @@ class WeatherPage extends ControllerBase {
           ],
           [
             'data' => [
-              '#markup' => "<em>{$description}</em> with a high of {$high} and a low of {$low}.</em>"
+              '#markup' => $this-> t("%description with a high of @hig and a low of @low.",
+                [
+                  '%description' => $description,
+                  '@high' => $high,
+                  '@low' => $low,
+                ]
+              )
             ]
           ],
         ];
@@ -99,12 +105,17 @@ class WeatherPage extends ControllerBase {
       ];
 
       $short_forecast = [
-        '#markup' => "The high for the weekend is {$highest} and the low is {$lowest}."
+        '#markup' => '<p>' . $this-> t("The high for the weekend is @highest and the low is @lowest.",
+          [
+            '@highest' => $highest,
+            '@lowest' => $lowest,
+          ]
+        ) . '</p>',
       ];
     }
     else {
       $weather_forecast = [
-        '#markup' => '<p>Sorry $display_name, no weather data available.</p>'
+        '#markup' => '<p>' . $this->t('Sorry $display_name, no weather data available.') . '</p>'
       ];
       $short_forecast = NULL;
     }
@@ -115,16 +126,20 @@ class WeatherPage extends ControllerBase {
         'library' => ['anytown/forecast'],
       ],
       '#weather_intro' => [
-        '#markup' => "<p>Hi $display_name, check out this weekend's weather forecast:</p>"
+        '#markup' => '<p>' . $this->t("Hi @display_name, check out this weekend's weather forecast:",
+          [
+            '@display_name' => $display_name,
+          ]
+        ) . '</p>'
       ],
       '#short_forecast' => $short_forecast,
       '#weather_forecast' => $weather_forecast,
       '#weather_closures' => [
         '#theme' => 'item_list',
-        '#title' => 'Weather-related closures',
+        '#title' => $this->t('Weather related closures'),
         '#items' => [
-          'Ice rink closed until winter. Please stay off while we prepare it.',
-          'Parking behind Apple Lane is still closed from all the rain last weekend.'
+          $this->t('Ice rink closed until winter - please stay off while we prepare it.'),
+          $this->t('Parking behind Apple Lane is still closed from all the rain last weekend.'),
         ],
       ],
     ];
