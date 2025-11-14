@@ -111,6 +111,9 @@ class WeatherPage extends ControllerBase {
 
     $build = [
       '#theme' => 'weather_page',
+      '#attached' => [
+        'library' => ['anytown/forecast'],
+      ],
       '#weather_intro' => [
         '#markup' => "<p>Hi $display_name, check out this weekend's weather forecast:</p>"
       ],
