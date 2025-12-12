@@ -10,6 +10,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\anytown\ForecastClientInterface;
 
 /**
  * Provides a 'Hello World' block.
@@ -23,10 +24,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class HelloWorldBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
   private $currentUser;
+  private $forecastClient;
 
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, AccountProxyInterface $current_user) {
+
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, AccountProxyInterface $current_user, ForecastClientInterface $forecast_client) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->currentUser = $current_user;
+    $this->forecastClient = $forecast_client;
   }
 
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -34,7 +38,8 @@ class HelloWorldBlock extends BlockBase implements ContainerFactoryPluginInterfa
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get('anytown.forecast_client')
     );
   }
 
@@ -43,9 +48,37 @@ class HelloWorldBlock extends BlockBase implements ContainerFactoryPluginInterfa
    */
   public function build(): array {
     $name = $this->currentUser->getDisplayName();
+    $url = 'https://module-developer-guide-demo-site.ddev.site/modules/custom/anytown/data/weather_forecast.json';
+    $forecast_data = $this->forecastClient->getForecastData($url);
+
+    $rows = [];
+    $highest = 0;
+    $lowest = 0;
+
+    if($forecast_data) {
+      foreach ($forecast_data as $item) {
+        [
+          'weekday' => $weekday,
+          'description' => $description,
+          'high' => $high,
+          'low' => $low,
+          'icon' => $icon,
+        ] = $item;
+
+        $highest = max($highest, $high);
+        $lowest = min($lowest, $low);
+      }
+    }
+
     if ($this->currentUser->isAuthenticated()) {
       $build['content'] = [
-        '#markup' => $this->t('Hello, %name', ['%name' => $name]),
+        '#markup' => 
+        '<p>' . $this-> t('Hello, %name', ['%name' => $name]) . '</p><p>' . $this->t("The high for the weekend is @highest and the low is @lowest.",
+          [
+            '@highest' => $highest,
+            '@lowest' => $lowest,
+          ]
+        ) . '</p>',
       ];
     } else {
       $build['content'] = [
@@ -56,7 +89,7 @@ class HelloWorldBlock extends BlockBase implements ContainerFactoryPluginInterfa
     $build['content']['#cache'] = [
       'max-age' => 0,
     ];
-    
+
     return $build;
   }
 }
