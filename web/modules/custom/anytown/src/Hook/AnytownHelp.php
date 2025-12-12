@@ -21,9 +21,14 @@ class AnytownHelp {
   #[Hook('help')]
   public function help($route_name, RouteMatchInterface $route_match) {
     if ($route_name === 'help.page.anytown') {
-      $name = $this->currentUser->getDisplayName();
-      return '<p>' . t('Hello @name, Help for the Anytown module.', ['@name' => $name]) . '</p>';
+      return '<p>' . t('Help for the Anytown module.') . '</p>';
     }
+
+    if ($route_name === 'anytown.weather_page') {
+      $name = $this->currentUser->getDisplayName();
+      return '<p>' . t('Hello @name! Click the button to show the extended forecast.', ['@name' => $name]) . '</p>';
+    }
+
   }
 
 }
