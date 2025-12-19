@@ -4,3 +4,10 @@ anytown.weather:
   menu_name: main
   # From anytown.routing.yml
   route_name: anytown.weather_page
+
+anytown.settings:
+  title: Anytown Settings
+  route_name: anytown.settings
+  parent: system.admin_config_system
+  weight: 10
+

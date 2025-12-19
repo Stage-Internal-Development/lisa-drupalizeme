@@ -17,3 +17,12 @@ anytown.weather_page:
   requirements:
     # What permissions a user needs to have in order to view this page.
     _permission: 'view weekly weather'
+
+# Settings form route.
+anytown.settings:
+  path: '/admin/config/system/anytown'
+  defaults:
+    _title: 'Anytown Settings'
+    _form: 'Drupal\anytown\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'
