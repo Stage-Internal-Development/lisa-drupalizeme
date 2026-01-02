@@ -1,6 +1,14 @@
 <?php
 
+use Drupal\Core\Form\FormStateInterface;
+
 /**
  * @file
  * Primary module hooks for anytown module.
  */
+
+function anytown_user_register_validate(array &$form, FormStateInterface $form_state) :void {
+  if($form_state->getValue('name') === 'anytown') {
+    $form_state->setErrorByName('name', t('The username "anytown" is invalid. Please choose a different name.'));
+  }
+}
