@@ -58,4 +58,32 @@ final class SettingsForm extends ConfigFormBase {
     return parent::buildForm($form, $form_state);
   }
 
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+
+    $location = $form_state->getValue('location');
+    $value = filter_var($location, FILTER_SANITIZE_URL);
+    if (!$value || strlen((string) $value) !==5) {
+      $form_state->setErrorByName('location', $this->t('Location must be a valid URL.'));
+    }
+//    $weather_closures = $form_state->getValue('weather_closures');
+//    if (!$weather_closures) {
+//      $form_state->setErrorByName('weather_closures', $this->t('Are you sure there are no weather closures?'));
+//    }
+  }
+
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
+    $displayForecast = $form_state->getValue('display_forecast');
+    $location = $form_state->getValue('location');
+    $weatherClosures = $form_state->getValue('weather_closures');
+
+    $this->config(self::SETTINGS)
+      ->set('display_forecast', $displayForecast)
+      ->set('location', $location)
+      ->set('weather_closures', $weatherClosures)
+      ->save();
+
+    $this->messenger()->addMessage($this->t('Settings saved.'));
+  }
+
 }
